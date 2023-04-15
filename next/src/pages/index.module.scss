@@ -1,7 +1,18 @@
+.header {
+  background-color: #444;
+  color: white;
+  font-size: 14px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 8px;
+  width: 100vw;
+}
 
 .messages {
   margin: 0 auto;
   max-width: 800px;
+  padding-top: 40px;
   padding-bottom: 80px;
   width: 100%;
 

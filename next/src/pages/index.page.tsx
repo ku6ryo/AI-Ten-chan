@@ -10,10 +10,17 @@ type Message = {
   timestamp: number
 }
 
+const MAX_MESSAGE_LENGTH = 2000
+
 export default function Home() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<Message[]>([{
+    id: uuid(),
+    role: "assistant",
+    message: "こんにちは！AI 天ちゃんです！メッセージを送ってね",
+    timestamp: new Date().getTime(),
+  }])
 
   useEffect(() => {
     scrollTo(0, document.body.scrollHeight)
@@ -32,8 +39,22 @@ export default function Home() {
         timestamp: new Date().getTime(),
       }] as Message[]
       setMessages(newMessages)
+
+      const messagesToSend = [] as Message[]
+      let totalMessageLen = 0
+      for (let i = 0; i < newMessages.length; i++) {
+        const m = newMessages[i]
+        const mLen = m.message.length
+        if (totalMessageLen + mLen > MAX_MESSAGE_LENGTH) {
+          break
+        } else {
+          messagesToSend.push(m)
+          totalMessageLen += mLen
+        }
+      }
+
       const res = await client.callTen(
-          newMessages.map(m => { return { role: m.role, content: m.message } })
+        messagesToSend.map(m => { return { role: m.role, content: m.message } })
       )
       setMessages([
         ...newMessages,
@@ -60,6 +81,7 @@ export default function Home() {
   }
   return (
     <div className={styles.frame}>
+      <div className={styles.header}>AI 天ちゃん</div>
       <div className={styles.messages}>
         {messages.map((m) => (
           <div className={styles.message} data-id={m.id} key={m.id}>
